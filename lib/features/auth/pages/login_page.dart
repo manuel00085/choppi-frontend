@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/auth_api.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../core/app_notifier.dart';
+import 'auth_gate.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -34,7 +35,10 @@ class _LoginPageState extends State<LoginPage> {
         const SnackBar(content: Text("Login exitoso")),
       );
 
-      Navigator.pushReplacementNamed(context, "/stores");
+      Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const AuthGate()),
+);
 
     } catch (e) {
 

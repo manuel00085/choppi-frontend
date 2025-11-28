@@ -4,6 +4,8 @@ import '../bloc/product_cubit.dart';
 import '../data/product_repository.dart';
 import '../../stores/data/store_product_model.dart';
 import '../../../core/app_notifier.dart';
+import '../../cart/bloc/cart_cubit.dart';
+import '../../cart/data/cart_item.dart';
 
 class ProductDetailPage extends StatelessWidget {
   final int productId;
@@ -25,40 +27,70 @@ class ProductDetailPage extends StatelessWidget {
         appBar: AppBar(title: Text(storeProduct.name)),
 
         /// 📌 BOTÓN FIJO ABAJO
-        bottomNavigationBar: SafeArea(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: colors.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 10,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  bottomNavigationBar: SafeArea(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 10,
+                            offset: const Offset(0, -2),
+                          ),
+                        ],
+                      ),
+                      child: BlocBuilder<ProductCubit, ProductState>(
+                        builder: (_, state) {
+                          if (state is ProductLoaded) {
+                            final p = state.product;
+
+                            final imageUrl = (p.images.isNotEmpty)
+                                ? p.images.first
+                                : "https://placehold.co/600x400/png?text=${p.name}";
+
+                            return SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                onPressed: () {
+                                  /// 🛒 Agregar al carrito real
+                                  context.read<CartCubit>().addItem(
+                                        CartItem(
+                                          productId: p.id,
+                                          name: p.name,
+                                          price: storeProduct.price,
+                                          quantity: 1,
+                                          image: imageUrl,
+                                        ),
+                                      );
+
+                                  /// 🎉 Notificación
+                                  AppNotifier.showSuccess("Producto agregado al carrito");
+                                },
+                                child: const Text(
+                                  "Agregar al carrito",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ),
+                            );
+                          }
+
+                          return const SizedBox();
+                        },
+                      ),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  AppNotifier.showSuccess("Producto agregado (demo)");
-                },
-                child: const Text(
-                  "Agregar al carrito",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        ),
+
 
         /// CONTENIDO
         body: BlocBuilder<ProductCubit, ProductState>(

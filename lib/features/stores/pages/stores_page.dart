@@ -5,6 +5,8 @@ import '../bloc/stores_cubit.dart';
 import 'store_detail_page.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../auth/pages/auth_gate.dart';
+import '../../cart/pages/cart_page.dart';
+
 class StoresPage extends StatefulWidget {
   const StoresPage({super.key});
 
@@ -29,6 +31,15 @@ class _StoresPageState extends State<StoresPage> {
       appBar: AppBar(
         title: const Text("Tiendas"),
         actions: [
+            IconButton(
+    icon: const Icon(Icons.shopping_cart),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const CartPage()),
+      );
+    },
+  ),
           IconButton(
             icon: const Icon(Icons.logout),
           onPressed: () async {
@@ -142,7 +153,7 @@ class _StoresPageState extends State<StoresPage> {
                                   child: Center(child: CircularProgressIndicator()),
                                 );
                               } else {
-                                return const SizedBox.shrink(); // Oculto cuando no hay más
+                                return const SizedBox.shrink(); 
                               }
                             }
 

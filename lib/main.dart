@@ -1,25 +1,20 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/app_notifier.dart';
-import 'core/storage/secure_storage.dart';
 import 'features/auth/pages/auth_gate.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'features/cart/bloc/cart_cubit.dart';
 
-// IMPORTS DE STORES
-//import 'features/stores/bloc/stores_cubit.dart';
-//import 'features/stores/data/store_repository.dart';
-//import 'features/stores/pages/stores_page.dart';
 
-// IMPORT DE LOGIN (aún no lo usamos aquí)
-//import 'features/auth/pages/login_page.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-
-  // final token = await SecureStorage.readToken();
-  // //print("TOKEN ACTUAL: $token");
-
-  runApp(const ChoppiApp());
+void main() {
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => CartCubit()),
+      ],
+      child: const ChoppiApp(),
+    ),
+  );
 }
 
 class ChoppiApp extends StatelessWidget {

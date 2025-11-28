@@ -14,9 +14,10 @@ import 'features/auth/pages/auth_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
 
-  final token = await SecureStorage.readToken();
-  print("TOKEN ACTUAL: $token");
+  // final token = await SecureStorage.readToken();
+  // //print("TOKEN ACTUAL: $token");
 
   runApp(const ChoppiApp());
 }
@@ -34,7 +35,7 @@ class ChoppiApp extends StatelessWidget {
       scaffoldMessengerKey: AppNotifier.messengerKey,
 
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 153, 255)),
         useMaterial3: true,
       ),
 

@@ -11,6 +11,7 @@ class StoresLoading extends StoresState {}
 
 class StoresLoaded extends StoresState {
   final List<StoreModel> stores;
+
   StoresLoaded(this.stores);
 
   @override
@@ -19,6 +20,7 @@ class StoresLoaded extends StoresState {
 
 class StoresError extends StoresState {
   final String message;
+
   StoresError(this.message);
 
   @override

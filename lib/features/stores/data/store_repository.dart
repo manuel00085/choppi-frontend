@@ -1,13 +1,15 @@
 import 'store_api.dart';
-import 'store_model.dart';
+import 'store_paginated_model.dart';
 
 class StoreRepository {
   final api = StoreApi();
 
-  Future<List<StoreModel>> fetchStores({
+  Future<PaginatedStores> fetchStores({
     int page = 1,
     String? search,
-  }) {
-    return api.getStores(page: page, q: search);
+  }) async {
+    final res = await api.getStores(page: page, q: search);
+    return PaginatedStores.fromJson(res);
   }
 }
+

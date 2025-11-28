@@ -15,15 +15,19 @@ class StoreDetailPage extends StatefulWidget {
 
 class _StoreDetailPageState extends State<StoreDetailPage> {
   final searchCtrl = TextEditingController();
-   bool showAvailable = false;
+  bool showAvailable = false;
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return BlocProvider(
       create: (_) =>
           StoreDetailCubit(StoreDetailRepository())..loadDetail(widget.storeId),
       child: Scaffold(
-        appBar: AppBar(title: const Text("Detalle de Tienda")),
+        appBar: AppBar(
+          title: const Text("Detalle de Tienda"),
+        ),
         body: BlocBuilder<StoreDetailCubit, StoreDetailState>(
           builder: (context, state) {
             if (state is StoreDetailLoading) {
@@ -37,19 +41,55 @@ class _StoreDetailPageState extends State<StoreDetailPage> {
             if (state is StoreDetailLoaded) {
               final store = state.data;
 
-              return Padding(
+              return SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    /// NOMBRE DE LA TIENDA
-                    Text(store.name,
-                        style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold)),
-                    Text(store.address,
-                        style: const TextStyle(color: Colors.grey)),
-                    const SizedBox(height: 16),
+                    /// 🏬 CARD DE INFORMACIÓN DE LA TIENDA
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: colors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            store.name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on, color: Colors.grey),
+                              const SizedBox(width: 4),
+                              Text(
+                                store.address,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
 
                     /// 🔍 BUSCADOR
                     TextField(
@@ -62,9 +102,7 @@ class _StoreDetailPageState extends State<StoreDetailPage> {
                                 icon: const Icon(Icons.clear),
                                 onPressed: () {
                                   searchCtrl.clear();
-                                  context
-                                      .read<StoreDetailCubit>()
-                                      .search("");
+                                  context.read<StoreDetailCubit>().search("");
                                   setState(() {});
                                 },
                               )
@@ -75,56 +113,101 @@ class _StoreDetailPageState extends State<StoreDetailPage> {
                       ),
                       onChanged: (value) {
                         context.read<StoreDetailCubit>().search(value);
-                        setState(() {}); // para refrescar el botón de limpiar
+                        setState(() {});
                       },
                     ),
+
                     const SizedBox(height: 20),
-                                          Row(
-                        children: [
-                          const Text("Solo disponibles"),
-                          Switch(
-                            value: showAvailable,
-                            onChanged: (value) {
-                              setState(() => showAvailable = value);
-                              context.read<StoreDetailCubit>().loadDetail(widget.storeId, inStock: value);
+
+                    /// 🔘 SWITCH DE DISPONIBILIDAD
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text("Solo disponibles",
+                            style: TextStyle(fontSize: 16)),
+                        Switch(
+                          value: showAvailable,
+                          activeColor: colors.primary,
+                          onChanged: (value) {
+                            setState(() => showAvailable = value);
+                            context.read<StoreDetailCubit>().loadDetail(
+                                  widget.storeId,
+                                  inStock: value,
+                                );
+                          },
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    /// TÍTULO DE PRODUCTOS
+                    const Text(
+                      "Productos",
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    /// 🛍 LISTA DE PRODUCTOS
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: store.products.length,
+                      itemBuilder: (_, i) {
+                        final p = store.products[i];
+                        return Card(
+                          elevation: 3,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(16),
+                            leading: CircleAvatar(
+                              radius: 26,
+                              backgroundColor: colors.primary.withOpacity(0.2),
+                              child: Icon(
+                                Icons.shopping_bag,
+                                color: colors.primary,
+                              ),
+                            ),
+                            title: Text(
+                              p.name,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: Text(
+                              "Stock: ${p.stock}",
+                              style:
+                                  TextStyle(color: Colors.grey.shade600),
+                            ),
+                            trailing: Text(
+                              "\$${p.price}",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: colors.primary,
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ProductDetailPage(
+                                    productId: p.productId,
+                                    storeProduct: p,
+                                  ),
+                                ),
+                              );
                             },
                           ),
-                        ],
-                      ),
-
-
-                    const Text("Productos:",
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 10),
-
-                    /// LISTA DE PRODUCTOS
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: store.products.length,
-                        itemBuilder: (_, i) {
-                          final p = store.products[i];
-                          return Card(
-                            child: ListTile(
-                              title: Text(p.name),
-                              subtitle: Text("Stock: ${p.stock}"),
-                              trailing: Text("\$${p.price}"),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ProductDetailPage(
-                                      productId: p.productId,
-                                      storeProduct: p,
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                    )
+                        );
+                      },
+                    ),
                   ],
                 ),
               );

@@ -51,28 +51,106 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            TextField(
-              controller: emailCtrl,
-              decoration: const InputDecoration(labelText: "Email"),
+      backgroundColor: const Color.fromARGB(255, 221, 221, 221),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.shadow.withOpacity(0.1),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  )
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  
+                  // TÍTULO
+                  Text(
+                    "Bienvenido",
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: colors.primary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "Inicia sesión para continuar",
+                    style: TextStyle(
+                      fontSize: 25,
+                      color: colors.onSurface,
+                      
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  // EMAIL FIELD
+                  TextField(
+                    controller: emailCtrl,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      prefixIcon: const Icon(Icons.email),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // PASSWORD FIELD
+                  TextField(
+                    controller: passwordCtrl,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      prefixIcon: const Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 28),
+
+                  // BOTÓN LOGIN
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.primary,
+                        foregroundColor: colors.onPrimary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: doLogin,
+                      child: const Text("Ingresar"),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: passwordCtrl,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: "Password"),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: doLogin,
-              child: const Text("Ingresar"),
-            ),
-          ],
+          ),
         ),
       ),
     );

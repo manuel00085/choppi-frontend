@@ -1,10 +1,9 @@
 import '../../../core/dio/dio_client.dart';
-import 'store_model.dart';
 
 class StoreApi {
   final dio = DioClient.instance;
 
-  Future<List<StoreModel>> getStores({
+  Future<Map<String, dynamic>> getStores({
     int page = 1,
     String? q,
   }) async {
@@ -12,12 +11,11 @@ class StoreApi {
       "/stores",
       queryParameters: {
         "page": page,
+        "limit": 5,
         if (q != null && q.isNotEmpty) "q": q,
       },
     );
 
-    final data = res.data["data"] as List;
-
-    return data.map((e) => StoreModel.fromJson(e)).toList();
+    return res.data;  // 👈 DEVUELVE EL JSON COMPLETO
   }
 }

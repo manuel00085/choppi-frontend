@@ -3,6 +3,7 @@ import '../data/auth_api.dart';
 import '../../../core/storage/secure_storage.dart';
 import '../../../core/app_notifier.dart';
 import 'auth_gate.dart';
+import '../../../core/app_loading.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,38 +15,38 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
-  bool loading = false;
-
-  final api = AuthApi(); // instancia del API
+  final api = AuthApi();
 
   Future<void> doLogin() async {
-    setState(() => loading = true);
+    final email = emailCtrl.text.trim();
+    final pass = passwordCtrl.text.trim();
 
-    try {
-      final token =
-          await api.login(emailCtrl.text.trim(), passwordCtrl.text.trim());
-
-      await SecureStorage.saveToken(token);
-
-       AppNotifier.showSuccess("Bienvenido");
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login exitoso")),
-      );
-
-      Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const AuthGate()),
-);
-
-    } catch (e) {
-
-       //AppNotifier.showError("Credenciales incorrectas");
+    if (email.isEmpty || pass.isEmpty) {
+      AppNotifier.showError("Debe llenar todos los campos");
+      return;
     }
 
-    setState(() => loading = false);
+    AppLoading.show(context);
+
+    try {
+      final token = await api.login(email, pass);
+
+      await SecureStorage.saveToken(token);
+      AppNotifier.showSuccess("Bienvenido");
+
+      if (!mounted) return;
+      AppLoading.hide(context);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const AuthGate()),
+      );
+    } catch (e) {
+      if (mounted) {
+        AppLoading.hide(context);
+        AppNotifier.showError("Credenciales inválidas");
+      }
+    }
   }
 
   @override
@@ -68,11 +69,9 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: loading ? null : doLogin,
-              child: loading
-                  ? const CircularProgressIndicator()
-                  : const Text("Ingresar"),
-            )
+              onPressed: doLogin,
+              child: const Text("Ingresar"),
+            ),
           ],
         ),
       ),

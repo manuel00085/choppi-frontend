@@ -2,18 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/store_detail_cubit.dart';
 import '../data/store_detail_repository.dart';
-//import '../data/store_detail_model.dart';
 import '../../products/pages/product_detail_page.dart';
 
-class StoreDetailPage extends StatelessWidget {
+class StoreDetailPage extends StatefulWidget {
   final int storeId;
 
   const StoreDetailPage({super.key, required this.storeId});
 
   @override
+  State<StoreDetailPage> createState() => _StoreDetailPageState();
+}
+
+class _StoreDetailPageState extends State<StoreDetailPage> {
+  final searchCtrl = TextEditingController();
+   bool showAvailable = false;
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => StoreDetailCubit(StoreDetailRepository())..loadDetail(storeId),
+      create: (_) =>
+          StoreDetailCubit(StoreDetailRepository())..loadDetail(widget.storeId),
       child: Scaffold(
         appBar: AppBar(title: const Text("Detalle de Tienda")),
         body: BlocBuilder<StoreDetailCubit, StoreDetailState>(
@@ -35,13 +43,62 @@ class StoreDetailPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    Text(store.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                    Text(store.address, style: const TextStyle(color: Colors.grey)),
+                    /// NOMBRE DE LA TIENDA
+                    Text(store.name,
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold)),
+                    Text(store.address,
+                        style: const TextStyle(color: Colors.grey)),
                     const SizedBox(height: 16),
 
-                    const Text("Productos:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    /// 🔍 BUSCADOR
+                    TextField(
+                      controller: searchCtrl,
+                      decoration: InputDecoration(
+                        labelText: "Buscar producto",
+                        prefixIcon: const Icon(Icons.search),
+                        suffixIcon: searchCtrl.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  searchCtrl.clear();
+                                  context
+                                      .read<StoreDetailCubit>()
+                                      .search("");
+                                  setState(() {});
+                                },
+                              )
+                            : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        context.read<StoreDetailCubit>().search(value);
+                        setState(() {}); // para refrescar el botón de limpiar
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                                          Row(
+                        children: [
+                          const Text("Solo disponibles"),
+                          Switch(
+                            value: showAvailable,
+                            onChanged: (value) {
+                              setState(() => showAvailable = value);
+                              context.read<StoreDetailCubit>().loadDetail(widget.storeId, inStock: value);
+                            },
+                          ),
+                        ],
+                      ),
+
+
+                    const Text("Productos:",
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
 
+                    /// LISTA DE PRODUCTOS
                     Expanded(
                       child: ListView.builder(
                         itemCount: store.products.length,

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/stores_cubit.dart';
-//import '../data/store_repository.dart';
 import '../widgets/store_item.dart';
+import '../../auth/pages/auth_gate.dart';
+import '../../../core/storage/secure_storage.dart';
 
 class StoresPage extends StatefulWidget {
   const StoresPage({super.key});
@@ -23,7 +24,23 @@ class _StoresPageState extends State<StoresPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Stores")),
+      appBar: AppBar(
+        title: const Text("Stores"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await SecureStorage.clearToken();
+
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (_) => const AuthGate()),
+                (_) => false,
+              );
+            },
+          )
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

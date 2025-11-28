@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/store_detail_cubit.dart';
 import '../data/store_detail_repository.dart';
-import '../data/store_detail_model.dart';
+//import '../data/store_detail_model.dart';
+import '../../products/pages/product_detail_page.dart';
 
 class StoreDetailPage extends StatelessWidget {
   final int storeId;
@@ -52,7 +53,15 @@ class StoreDetailPage extends StatelessWidget {
                               subtitle: Text("Stock: ${p.stock}"),
                               trailing: Text("\$${p.price}"),
                               onTap: () {
-                                // Ir al detalle del producto
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ProductDetailPage(
+                                      productId: p.productId,
+                                      storeProduct: p,
+                                    ),
+                                  ),
+                                );
                               },
                             ),
                           );

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+//import 'package:flutter_bloc/flutter_bloc.dart';
 import 'core/app_notifier.dart';
 import 'core/storage/secure_storage.dart';
 import 'features/auth/pages/auth_gate.dart';
 
 // IMPORTS DE STORES
-import 'features/stores/bloc/stores_cubit.dart';
-import 'features/stores/data/store_repository.dart';
-import 'features/stores/pages/stores_page.dart';
+//import 'features/stores/bloc/stores_cubit.dart';
+//import 'features/stores/data/store_repository.dart';
+//import 'features/stores/pages/stores_page.dart';
 
 // IMPORT DE LOGIN (aún no lo usamos aquí)
-import 'features/auth/pages/login_page.dart';
+//import 'features/auth/pages/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/store_model.dart';
+import '../pages/store_detail_page.dart';
 
 class StoreItem extends StatelessWidget {
   final StoreModel store;
@@ -13,7 +14,12 @@ class StoreItem extends StatelessWidget {
         title: Text(store.name),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: () {
-          Navigator.pushNamed(context, "/store/${store.id}");
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => StoreDetailPage(storeId: store.id),
+            ),
+          );
         },
       ),
     );
